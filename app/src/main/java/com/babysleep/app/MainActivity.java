@@ -1,10 +1,6 @@
 package com.babysleep.app;
 
-import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -15,11 +11,10 @@ import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
-import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     private MediaPlayer mediaPlayer;
-    private StarView starView;
+    private View starView;
     private Button playButton;
     private Button stopButton;
     private SeekBar volumeSeekBar;
@@ -45,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
         setupVolumeControl();
         setupTimerControl();
         setupButtons();
-        startStarAnimation();
     }
 
     private void setupMediaPlayer() {
@@ -155,13 +149,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void startStarAnimation() {
-        ObjectAnimator animator = ObjectAnimator.ofFloat(starView, "rotation", 0f, 360f);
-        animator.setDuration(60000);
-        animator.setRepeatCount(ObjectAnimator.INFINITE);
-        animator.start();
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -174,57 +161,6 @@ public class MainActivity extends AppCompatActivity {
         }
         if (wakeLock.isHeld()) {
             wakeLock.release();
-        }
-    }
-
-    public static class StarView extends View {
-        private Paint paint;
-        private Random random;
-        private float[] starX;
-        private float[] starY;
-        private float[] starSize;
-        private float[] starAlpha;
-
-        public StarView(Context context) {
-            super(context);
-            init();
-        }
-
-        private void init() {
-            paint = new Paint();
-            random = new Random();
-            starX = new float[50];
-            starY = new float[50];
-            starSize = new float[50];
-            starAlpha = new float[50];
-
-            for (int i = 0; i < 50; i++) {
-                starX[i] = random.nextFloat();
-                starY[i] = random.nextFloat();
-                starSize[i] = 2 + random.nextFloat() * 4;
-                starAlpha[i] = 0.5f + random.nextFloat() * 0.5f;
-            }
-        }
-
-        @Override
-        protected void onDraw(Canvas canvas) {
-            super.onDraw(canvas);
-            canvas.drawColor(Color.parseColor("#0a0a2e"));
-
-            paint.setColor(Color.WHITE);
-
-            for (int i = 0; i < 50; i++) {
-                paint.setAlpha((int) (starAlpha[i] * 255));
-                float x = starX[i] * getWidth();
-                float y = starY[i] * getHeight();
-                canvas.drawCircle(x, y, starSize[i], paint);
-
-                starAlpha[i] += (random.nextFloat() - 0.5f) * 0.1f;
-                if (starAlpha[i] < 0.2f) starAlpha[i] = 0.2f;
-                if (starAlpha[i] > 1.0f) starAlpha[i] = 1.0f;
-            }
-
-            postInvalidateDelayed(100);
         }
     }
 }
