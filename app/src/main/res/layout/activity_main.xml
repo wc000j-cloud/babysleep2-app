@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/background">
 
-    <com.babysleep.app.MainActivity$StarView
+    <View
         android:id="@+id/starView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
