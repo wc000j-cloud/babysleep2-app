@@ -93,9 +93,7 @@
                 android:textSize="18sp"
                 android:enabled="false"
                 android:backgroundTint="@color/button_stop" />
-
         </LinearLayout>
-
     </LinearLayout>
 
 </RelativeLayout>
