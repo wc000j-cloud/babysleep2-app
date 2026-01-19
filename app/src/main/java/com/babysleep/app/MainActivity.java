@@ -43,12 +43,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupMediaPlayer() {
-        mediaPlayer = MediaPlayer.create(this, R.raw.lullaby);
-        mediaPlayer.setLooping(true);
-        mediaPlayer.setVolume(0.5f, 0.5f);
+        try {
+            int resourceId = getResources().getIdentifier("lullaby_mp3", "raw", getPackageName());
+            mediaPlayer = MediaPlayer.create(this, resourceId);
+            mediaPlayer.setLooping(true);
+            mediaPlayer.setVolume(0.5f, 0.5f);
 
-        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "BabySleep:WakeLock");
+            PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "BabySleep:WakeLock");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void setupVolumeControl() {
