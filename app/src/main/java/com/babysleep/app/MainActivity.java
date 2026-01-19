@@ -1,7 +1,6 @@
 package com.babysleep.app;
 
 import android.content.Context;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -14,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
     private MediaPlayer mediaPlayer;
-    private View starView;
     private Button playButton;
     private Button stopButton;
     private SeekBar volumeSeekBar;
@@ -29,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        starView = findViewById(R.id.starView);
         playButton = findViewById(R.id.playButton);
         stopButton = findViewById(R.id.stopButton);
         volumeSeekBar = findViewById(R.id.volumeSeekBar);
@@ -63,7 +60,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 float volume = progress / 100f;
-                mediaPlayer.setVolume(volume, volume);
+                if (mediaPlayer != null) {
+                    mediaPlayer.setVolume(volume, volume);
+                }
             }
 
             @Override
@@ -112,35 +111,39 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startPlaying() {
-        mediaPlayer.start();
-        isPlaying = true;
-        playButton.setEnabled(false);
-        stopButton.setEnabled(true);
-        wakeLock.acquire();
+        if (mediaPlayer != null) {
+            mediaPlayer.start();
+            isPlaying = true;
+            playButton.setEnabled(false);
+            stopButton.setEnabled(true);
+            wakeLock.acquire();
 
-        int minutes = timerSeekBar.getProgress();
-        long millisInFuture = minutes * 60 * 1000;
+            int minutes = timerSeekBar.getProgress();
+            long millisInFuture = minutes * 60 * 1000;
 
-        countDownTimer = new CountDownTimer(millisInFuture, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                int seconds = (int) (millisUntilFinished / 1000);
-                int mins = seconds / 60;
-                int secs = seconds % 60;
-                timerText.setText(String.format("%02d:%02d", mins, secs));
-            }
+            countDownTimer = new CountDownTimer(millisInFuture, 1000) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    int seconds = (int) (millisUntilFinished / 1000);
+                    int mins = seconds / 60;
+                    int secs = seconds % 60;
+                    timerText.setText(String.format("%02d:%02d", mins, secs));
+                }
 
-            @Override
-            public void onFinish() {
-                stopPlaying();
-                timerText.setText(timerSeekBar.getProgress() + " 分钟");
-            }
-        }.start();
+                @Override
+                public void onFinish() {
+                    stopPlaying();
+                    timerText.setText(timerSeekBar.getProgress() + " 分钟");
+                }
+            }.start();
+        }
     }
 
     private void stopPlaying() {
-        mediaPlayer.pause();
-        mediaPlayer.seekTo(0);
+        if (mediaPlayer != null) {
+            mediaPlayer.pause();
+            mediaPlayer.seekTo(0);
+        }
         isPlaying = false;
         playButton.setEnabled(true);
         stopButton.setEnabled(false);
@@ -149,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
             countDownTimer.cancel();
         }
 
-        if (wakeLock.isHeld()) {
+        if (wakeLock != null && wakeLock.isHeld()) {
             wakeLock.release();
         }
     }
@@ -164,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
         if (countDownTimer != null) {
             countDownTimer.cancel();
         }
-        if (wakeLock.isHeld()) {
+        if (wakeLock != null && wakeLock.isHeld()) {
             wakeLock.release();
         }
     }
